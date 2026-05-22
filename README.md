@@ -20,5 +20,11 @@
 - 其他页面左右分栏（左侧375px手机原型 + 右侧说明文档）
 - 最大宽度1920px，全屏友好
 
+## GitHub 仓库
+https://github.com/t359335467/nurse-referral-activity
+
+## 在线访问（GitHub Pages）
+https://t359335467.github.io/nurse-referral-activity/护士网拉新活动原型.html
+
 ## 创建时间
 2026-05-22
