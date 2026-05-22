@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>护士网 - 拉新领资料活动原型</title>
+<style>
+/* ===== 全局重置 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f0f2f5;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ===== 主容器：列布局（顶部菜单 + 内容区） ===== */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 1920px;
+  width: 100%;
+  height: 96vh;
+  max-height: 960px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* ===== 一级页面菜单 ===== */
+.page-tabs {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e8e8e8;
+  overflow-x: auto;
+  flex-shrink: 0;
+  padding: 0 8px;
+}
+.page-tab {
+  padding: 14px 22px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+}
+.page-tab:hover { color: #1890FF; background: #f0f5ff; }
+.page-tab.active {
+  color: #1890FF;
+  border-bottom-color: #1890FF;
+  font-weight: 600;
+  background: #fff;
+}
+
+/* ===== 主内容区 ===== */
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ===== 整体需求说明页（全宽独立页面） ===== */
+.full-page {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 36px 44px;
+  background: #fff;
+  line-height: 1.7;
+}
+.full-page.active { display: block; }
+
+.full-page h1 {
+  font-size: 24px;
+  color: #262626;
+  margin-bottom: 28px;
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #1890FF;
+}
+.full-page h2 {
+  font-size: 18px;
+  color: #1890FF;
+  margin: 28px 0 16px;
+  padding-left: 12px;
+  border-left: 3px solid #1890FF;
+}
+.full-page h3 {
+  font-size: 15px;
+  color: #262626;
+  margin: 16px 0 8px;
+}
+.full-page p {
+  font-size: 14px;
+  color: #595959;
+  margin-bottom: 10px;
+}
+.full-page ul {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+.full-page li {
+  font-size: 14px;
+  color: #595959;
+  margin-bottom: 6px;
+}
+
+/* 流程图卡片 */
+.flow-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+}
+.flow-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 4px 0;
+}
+.flow-card {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 100px;
+}
+.flow-card.blue { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+.flow-card.green { background: #F6FFED; color: #52C41A; border: 1px solid #B7EB8F; }
+.flow-card.gold { background: #FFFBE6; color: #FAAD14; border: 1px solid #FFE58F; }
+.flow-card.gray { background: #f0f0f0; color: #595959; border: 1px solid #d9d9d9; }
+.flow-arrow { color: #bfbfbf; font-size: 20px; font-weight: 300; }
+.flow-split {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  justify-content: center;
+}
+.flow-split-item {
+  flex: 1;
+  max-width: 280px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #595959;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.flow-split-item .branch-label {
+  display: inline-block;
+  padding: 1px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.branch-new { background: #F6FFED; color: #52C41A; }
+.branch-old { background: #FFFBE6; color: #FAAD14; }
+
+/* 规则框 */
+.rules-box {
+  background: #FFFBE6;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  border: 1px solid #FFE58F;
+}
+.rules-box li { font-size: 14px; color: #595959; margin-bottom: 6px; }
+
+/* 角色卡片 */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 12px 0;
+}
+.role-card {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+}
+.role-card h3 { font-size: 14px; margin-bottom: 6px; }
+.role-card p { font-size: 13px; color: #8C8C8C; line-height: 1.6; }
+
+/* ===== 左右分栏布局（原型展示） ===== */
+.prototype-layout {
+  display: none;
+  flex: 1;
+  gap: 20px;
+  padding: 16px;
+  background: #f0f2f5;
+  overflow: hidden;
+}
+.prototype-layout.active { display: flex; }
+
+/* 左侧原型区 */
+.left-panel {
+  flex: 7;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.prototype-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* 手机模拟框 */
+.phone-frame {
+  width: 375px;
+  height: 100%;
+  max-height: 800px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  overflow-y: auto;
+  position: relative;
+}
+.phone-frame::-webkit-scrollbar { width: 3px; }
+.phone-frame::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+/* 手机页面隐藏/显示 */
+.phone-page { display: none; }
+.phone-page.active { display: flex; flex-direction: column; height: 100%; }
+
+/* ===== 右侧说明区 ===== */
+.right-panel {
+  flex: 3;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 24px 20px;
+  overflow-y: auto;
+}
+.right-panel h2 {
+  font-size: 20px;
+  color: #262626;
+  margin-bottom: 6px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #1890FF;
+}
+.right-panel h3 {
+  font-size: 15px;
+  color: #1890FF;
+  margin: 18px 0 8px;
+}
+.right-panel h4 {
+  font-size: 13px;
+  color: #595959;
+  margin: 12px 0 4px;
+}
+.right-panel p, .right-panel li {
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.7;
+}
+.right-panel ul { padding-left: 18px; margin: 4px 0; }
+.right-panel .tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin: 2px 4px 2px 0;
+}
+.tag-blue { background: #E6F7FF; color: #1890FF; }
+.tag-green { background: #F6FFED; color: #52C41A; }
+.tag-gold { background: #FFFBE6; color: #FAAD14; }
+.tag-red { background: #FFF2F0; color: #F5222D; }
+.tag-gray { background: #F5F5F5; color: #8C8C8C; }
+
+/* ================================================================
+   原型内部样式（模拟 375px 手机页面）
+   ================================================================ */
+
+/* 通用 */
+.navbar {
+  display: flex; align-items: center; justify-content: center;
+  height: 48px; padding: 0 16px; position: sticky; top: 0;
+  background: #fff; z-index: 10; border-bottom: 1px solid #f0f0f0;
+}
+.navbar .back { position: absolute; left: 16px; font-size: 18px; color: #262626; cursor: pointer; line-height: 1; }
+.navbar .title { font-size: 16px; font-weight: 500; color: #262626; }
+.navbar .right { position: absolute; right: 16px; font-size: 14px; color: #1890FF; }
+
+/* 推荐轮播 */
+.carousel-section { padding: 0 16px; margin-top: 12px; }
+.carousel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.carousel-header h3 { font-size: 16px; font-weight: 600; color: #262626; }
+.carousel-nav { display: flex; gap: 8px; }
+.carousel-nav button {
+  width: 28px; height: 28px; border-radius: 50%; border: 1px solid #e8e8e8;
+  background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #595959;
+}
+.carousel-nav button:hover { border-color: #1890FF; color: #1890FF; }
+.carousel-track {
+  position: relative; overflow: hidden; border-radius: 12px;
+  background: linear-gradient(135deg, #1890FF, #096DD9);
+  height: 160px; display: flex; align-items: flex-end; padding: 20px;
+}
+.carousel-item {
+  display: none; flex-direction: column; color: #fff; width: 100%;
+}
+.carousel-item.active { display: flex; }
+.carousel-item .type-tag {
+  align-self: flex-start; padding: 2px 10px; border-radius: 10px;
+  font-size: 11px; margin-bottom: 8px;
+}
+.carousel-item .c-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.carousel-item .c-desc { font-size: 12px; opacity: 0.85; }
+.dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: #d9d9d9; cursor: pointer;
+}
+.dots span.active { background: #1890FF; width: 18px; border-radius: 3px; }
+
+/* 全部列表 */
+.list-section { padding: 0 16px; margin-top: 16px; flex: 1; }
+.list-section h3 { font-size: 15px; font-weight: 600; color: #262626; margin-bottom: 10px; }
+.material-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.material-card {
+  border-radius: 10px; border: 1px solid #f0f0f0; overflow: hidden; cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.material-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.material-card .thumb {
+  height: 80px; display: flex; align-items: center; justify-content: center;
+  font-size: 28px; position: relative;
+}
+.material-card .badge {
+  position: absolute; top: 6px; right: 6px; font-size: 10px;
+  padding: 1px 8px; border-radius: 8px; color: #fff;
+}
+.material-card .info { padding: 8px 10px; }
+.material-card .info .mc-title { font-size: 13px; font-weight: 500; color: #262626; }
+.material-card .info .mc-sub { font-size: 11px; color: #8C8C8C; margin-top: 2px; }
+
+/* 裂变发起页 */
+.detail-cover {
+  height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 16px 12px; border-radius: 12px; color: #fff; font-size: 36px;
+}
+.detail-cover .dc-title { font-size: 18px; font-weight: 600; margin-top: 8px; }
+.detail-cover .dc-sub { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+.detail-body { padding: 0 16px; flex: 1; }
+.detail-body .desc { font-size: 13px; color: #595959; line-height: 1.8; }
+
+/* 邀请进度 */
+.invite-section {
+  margin: 16px; padding: 16px; border-radius: 12px;
+  background: linear-gradient(135deg, #FFFBE6, #FFF7CC);
+}
+.invite-section .progress-text {
+  font-size: 14px; font-weight: 600; color: #262626; text-align: center;
+}
+.invite-section .progress-text span { color: #FAAD14; }
+.invite-section .progress-bar {
+  height: 6px; background: #FFE58F; border-radius: 3px; margin: 10px 0; overflow: hidden;
+}
+.invite-section .progress-bar .fill {
+  height: 100%; background: linear-gradient(90deg, #FAAD14, #FF7A45); border-radius: 3px; width: 0%;
+}
+.invite-section .avatars {
+  display: flex; justify-content: center; gap: 8px; margin-top: 10px;
+}
+.invite-section .avatars .av {
+  width: 36px; height: 36px; border-radius: 50%; border: 2px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff;
+}
+.invite-section .avatars .av.empty {
+  background: #f0f0f0; border: 2px dashed #d9d9d9; color: #bfbfbf;
+}
+.invite-section .hint { text-align: center; font-size: 12px; color: #8C8C8C; margin-top: 8px; }
+
+/* 按钮 */
+.btn-share {
+  margin: 12px 16px 16px; padding: 13px 0; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #1890FF, #096DD9); color: #fff;
+  font-size: 16px; font-weight: 600; cursor: pointer; text-align: center;
+}
+.btn-share:active { opacity: 0.9; }
+.btn-claim {
+  margin: 12px 16px 16px; padding: 13px 0; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #52C41A, #389E0D); color: #fff;
+  font-size: 16px; font-weight: 600; cursor: pointer; text-align: center;
+}
+.btn-claimed {
+  margin: 12px 16px 16px; padding: 13px 0; border-radius: 10px;
+  background: #f5f5f5; color: #bfbfbf; font-size: 14px; text-align: center;
+}
+
+/* 受邀助力页 */
+.help-header {
+  text-align: center; padding: 24px 16px 16px;
+}
+.help-header .hh-icon { font-size: 48px; margin-bottom: 8px; }
+.help-header .hh-title { font-size: 16px; font-weight: 600; color: #262626; }
+.help-header .hh-sub { font-size: 13px; color: #8C8C8C; margin-top: 4px; }
+.help-body { padding: 0 16px; text-align: center; flex: 1; }
+.help-body .inviter { font-size: 14px; color: #595959; }
+.help-body .inviter strong { color: #262626; }
+.help-btn {
+  margin: 24px 16px; padding: 14px 0; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #1890FF, #096DD9); color: #fff;
+  font-size: 16px; font-weight: 600; cursor: pointer; text-align: center;
+}
+
+/* 助力成功 */
+.success-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px 32px; text-align: center; }
+.success-page .s-icon { font-size: 64px; margin-bottom: 16px; }
+.success-page .s-title { font-size: 20px; font-weight: 600; color: #262626; margin-bottom: 8px; }
+.success-page .s-desc { font-size: 14px; color: #595959; margin-bottom: 24px; }
+.success-page .s-btn {
+  padding: 12px 32px; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #1890FF, #096DD9); color: #fff;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+}
+
+/* 老用户提示 */
+.existed-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px 32px; text-align: center; }
+.existed-page .e-icon { font-size: 56px; margin-bottom: 12px; }
+.existed-page .e-title { font-size: 18px; font-weight: 600; color: #262626; margin-bottom: 8px; }
+.existed-page .e-desc { font-size: 14px; color: #595959; margin-bottom: 24px; }
+.existed-page .e-btn {
+  padding: 12px 32px; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #1890FF, #096DD9); color: #fff;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+}
+
+/* 已领取提示 */
+.claimed-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px 32px; text-align: center; }
+.claimed-page .cl-icon { font-size: 56px; margin-bottom: 12px; opacity: 0.5; }
+.claimed-page .cl-title { font-size: 18px; font-weight: 600; color: #262626; margin-bottom: 8px; }
+.claimed-page .cl-desc { font-size: 14px; color: #8C8C8C; margin-bottom: 24px; }
+.claimed-page .cl-btn {
+  padding: 12px 32px; border: none; border-radius: 10px;
+  background: #f5f5f5; color: #8C8C8C; font-size: 15px; font-weight: 500; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="main-container">
+  <!-- ====== 一级页面菜单 ====== -->
+  <div class="page-tabs">
+    <button class="page-tab active" data-page="overview" onclick="switchPage('overview')">需求总体说明</button>
+    <button class="page-tab" data-page="activity-home" onclick="switchPage('activity-home')">活动主页</button>
+    <button class="page-tab" data-page="activity-detail" onclick="switchPage('activity-detail')">裂变发起</button>
+    <button class="page-tab" data-page="activity-help" onclick="switchPage('activity-help')">受邀助力</button>
+    <button class="page-tab" data-page="help-success" onclick="switchPage('help-success')">助力成功</button>
+    <button class="page-tab" data-page="help-existed" onclick="switchPage('help-existed')">老用户提示</button>
+    <button class="page-tab" data-page="activity-claimed" onclick="switchPage('activity-claimed')">已领取提示</button>
+  </div>
+
+  <!-- ====== 主内容区 ====== -->
+  <div class="main-content">
+
+    <!-- ====== 需求总体说明（全宽独立页面） ====== -->
+    <div id="page-overview" class="full-page active">
+      <h1>拉新领资料活动 · 整体业务流程说明</h1>
+
+      <!-- 业务流程 -->
+      <h2>一、业务流程</h2>
+      <p>用户进入活动主页浏览推荐资料与小课，点击感兴趣的资料发起"邀请2位新用户助力"任务，分享给微信好友后，好友助力成功即可领取资料。</p>
+
+      <div class="flow-section">
+        <div class="flow-row">
+          <div class="flow-card blue">进入活动主页</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-card blue">浏览推荐&amp;全部资料</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-card gold">点击感兴趣的资料</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-card green">发起助力邀请</div>
+        </div>
+
+        <div style="text-align:center;margin:10px 0;color:#bfbfbf">│ 分享小程序卡片给微信好友 │</div>
+
+        <div class="flow-row">
+          <div class="flow-card gold">好友点击卡片进入</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-card blue">受邀助力页</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-card blue">点击"立即助力"</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-card gray">登录/注册</div>
+        </div>
+
+        <div class="flow-split">
+          <div class="flow-split-item">
+            <div class="branch-label branch-new">新用户</div>
+            <div style="font-size:13px;color:#52C41A;font-weight:500">✓ 助力成功</div>
+            <div style="font-size:12px;color:#8C8C8C;margin-top:4px">可继续浏览活动页，自己也可发起助力</div>
+          </div>
+          <div class="flow-split-item">
+            <div class="branch-label branch-old">老用户</div>
+            <div style="font-size:13px;color:#FAAD14;font-weight:500">✗ 无助力资格</div>
+            <div style="font-size:12px;color:#8C8C8C;margin-top:4px">引导成为发起人，自己发起助力任务</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin:12px 0 0;color:#bfbfbf;font-size:13px">
+          助力满2人 →
+          <span style="color:#52C41A;font-weight:600">系统自动发放资料</span>
+          → 发起人再次进入提示"已领取，请前往APP查看"
+        </div>
+      </div>
+
+      <!-- 活动规则 -->
+      <h2>二、活动规则</h2>
+      <div class="rules-box">
+        <ul>
+          <li>每个用户可同时对<strong>多个资料</strong>发起助力任务，各任务进度独立计算，互不冲突</li>
+          <li>每个资料需邀请 <strong>2位新用户</strong>（未注册平台的用户）助力方可领取</li>
+          <li>助力人数达到目标后，系统<strong>自动发放</strong>资料至对应用户账号</li>
+          <li>已领取的资料可在 APP 中查看内容</li>
+          <li>每个用户仅能助力同一资料 <strong>一次</strong>，不可重复助力</li>
+        </ul>
+      </div>
+
+      <!-- 页面流程 -->
+      <h2>三、页面流转关系</h2>
+      <div class="flow-section">
+        <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;font-size:13px">
+          <div style="text-align:center">
+            <div style="background:#1890FF;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;margin-bottom:4px">活动主页</div>
+            <div style="color:#bfbfbf;font-size:12px">点击资料卡片 ↓</div>
+          </div>
+          <span style="color:#bfbfbf;font-size:24px;line-height:50px">→</span>
+          <div style="text-align:center">
+            <div style="background:#1890FF;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;margin-bottom:4px">裂变发起页</div>
+            <div style="color:#bfbfbf;font-size:12px">分享 ↓</div>
+          </div>
+          <span style="color:#bfbfbf;font-size:24px;line-height:50px">→</span>
+          <div style="text-align:center">
+            <div style="background:#1890FF;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;margin-bottom:4px">受邀助力页</div>
+            <div style="color:#bfbfbf;font-size:12px">助力 ↓ 分流</div>
+          </div>
+          <span style="color:#bfbfbf;font-size:24px;line-height:50px">→</span>
+          <div style="display:flex;gap:12px">
+            <div style="text-align:center">
+              <div style="background:#52C41A;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;margin-bottom:4px">助力成功页</div>
+              <div style="color:#8C8C8C;font-size:11px">新用户</div>
+            </div>
+            <div style="text-align:center">
+              <div style="background:#FAAD14;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;margin-bottom:4px">老用户提示页</div>
+              <div style="color:#8C8C8C;font-size:11px">老用户</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;color:#bfbfbf;font-size:12px">
+          发起人助力满2人 → 返回裂变发起页 → 显示"已领取"状态
+        </div>
+      </div>
+
+      <!-- 用户角色说明 -->
+      <h2>四、用户角色说明</h2>
+      <div class="role-grid">
+        <div class="role-card">
+          <h3>发起人</h3>
+          <p>浏览活动页资料列表 → 发起助力 → 分享小程序卡片给微信好友 → 满2人助力后领取资料。可同时对多个资料发起助力。</p>
+        </div>
+        <div class="role-card">
+          <h3>受邀好友（新用户）</h3>
+          <p>通过小程序卡片进入 → 注册/登录 → 助力成功 → 可继续浏览活动页，自己也可发起新的助力任务。</p>
+        </div>
+        <div class="role-card">
+          <h3>受邀好友（老用户）</h3>
+          <p>通过小程序卡片进入 → 登录 → 提示无助力资格 → 引导成为发起人，自行发起助力任务领取资料。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 左右分栏原型布局 ====== -->
+    <div id="prototype-layout" class="prototype-layout">
+      <!-- 左侧：原型区 -->
+      <div class="left-panel">
+        <div class="prototype-area">
+          <div class="phone-frame">
+
+            <!-- 活动主页 -->
+            <div id="phone-activity-home" class="phone-page">
+              <div class="navbar">
+                <span class="back">&#8592;</span>
+                <span class="title">免费领资料</span>
+                <span class="right">···</span>
+              </div>
+
+              <div class="carousel-section">
+                <div class="carousel-header">
+                  <h3>推荐内容</h3>
+                  <div class="carousel-nav">
+                    <button onclick="carouselPrev(event)">&#8249;</button>
+                    <button onclick="carouselNext(event)">&#8250;</button>
+                  </div>
+                </div>
+                <div class="carousel-track" id="carousel-track">
+                  <div class="carousel-item active">
+                    <span class="type-tag" style="background:rgba(255,255,255,0.25)">&#x1F4D6; 小课</span>
+                    <span class="c-title">护考高频考点精讲</span>
+                    <span class="c-desc">覆盖80%护考核心考点，快速提分</span>
+                  </div>
+                  <div class="carousel-item">
+                    <span class="type-tag" style="background:rgba(255,255,255,0.25)">&#x1F4C4; 资料</span>
+                    <span class="c-title">面试常见100题</span>
+                    <span class="c-desc">各医院面试真题汇总，含详细解析</span>
+                  </div>
+                  <div class="carousel-item">
+                    <span class="type-tag" style="background:rgba(255,255,255,0.25)">&#x1F4D6; 小课</span>
+                    <span class="c-title">护士职业规划课</span>
+                    <span class="c-desc">从新人到主管的成长路径</span>
+                  </div>
+                </div>
+                <div class="dots" id="carousel-dots">
+                  <span class="active"></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="list-section">
+                <h3>全部资料与小课</h3>
+                <div class="material-grid">
+                  <div class="material-card" onclick="switchPage('activity-detail')">
+                    <div class="thumb" style="background:#E6F7FF">&#x1F4D6;<span class="badge" style="background:#FAAD14">进行中</span></div>
+                    <div class="info">
+                      <div class="mc-title">护考高频考点精讲</div>
+                      <div class="mc-sub">已邀请 1/2 人</div>
+                    </div>
+                  </div>
+                  <div class="material-card" onclick="switchPage('activity-detail')">
+                    <div class="thumb" style="background:#F6FFED">&#x1F4C4;</div>
+                    <div class="info">
+                      <div class="mc-title">面试常见100题</div>
+                      <div class="mc-sub">资料 · 2人已领</div>
+                    </div>
+                  </div>
+                  <div class="material-card" onclick="switchPage('activity-detail')">
+                    <div class="thumb" style="background:#FFF0F6">&#x1F4D6;</div>
+                    <div class="info">
+                      <div class="mc-title">护士职业规划课</div>
+                      <div class="mc-sub">小课 · 5人已领</div>
+                    </div>
+                  </div>
+                  <div class="material-card" onclick="switchPage('activity-detail')">
+                    <div class="thumb" style="background:#F0F5FF">&#x1F4C4;</div>
+                    <div class="info">
+                      <div class="mc-title">护理操作视频合集</div>
+                      <div class="mc-sub">资料 · 3人已领</div>
+                    </div>
+                  </div>
+                  <div class="material-card" onclick="switchPage('activity-detail')">
+                    <div class="thumb" style="background:#FFFBE6">&#x1F4C4;<span class="badge" style="background:#52C41A">已完成</span></div>
+                    <div class="info">
+                      <div class="mc-title">科室带教手册</div>
+                      <div class="mc-sub">资料 · 已领取</div>
+                    </div>
+                  </div>
+                  <div class="material-card" onclick="switchPage('activity-detail')">
+                    <div class="thumb" style="background:#F9F0FF">&#x1F4D6;</div>
+                    <div class="info">
+                      <div class="mc-title">护患沟通技巧</div>
+                      <div class="mc-sub">小课 · 1人已领</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 裂变发起页 -->
+            <div id="phone-activity-detail" class="phone-page">
+              <div class="navbar">
+                <span class="back">&#8592;</span>
+                <span class="title">资料详情</span>
+                <span class="right"></span>
+              </div>
+              <div class="detail-cover" style="background:linear-gradient(135deg,#1890FF,#096DD9)">
+                &#x1F4D6;
+                <span class="dc-title">护考高频考点精讲</span>
+                <span class="dc-sub">邀请2位好友助力即可免费领取</span>
+              </div>
+              <div class="detail-body">
+                <div class="desc">
+                  本课程汇总了近3年护考高频考点，覆盖基础护理、内科护理、外科护理等核心科目，由资深护考讲师精心录制，帮助你在最短时间内掌握重点难点。
+                </div>
+              </div>
+              <div class="invite-section">
+                <div class="progress-text">已邀请 <span>1</span>/2 人</div>
+                <div class="progress-bar"><div class="fill" style="width:50%"></div></div>
+                <div class="avatars">
+                  <div class="av" style="background:#1890FF">李</div>
+                  <div class="av empty">+</div>
+                </div>
+                <div class="hint">邀请2位新用户即可免费领取</div>
+              </div>
+              <div class="btn-share">立即分享</div>
+            </div>
+
+            <!-- 受邀助力页（未登录） -->
+            <div id="phone-activity-help" class="phone-page">
+              <div class="navbar">
+                <span class="back">&#8592;</span>
+                <span class="title">好友助力</span>
+                <span class="right"></span>
+              </div>
+              <div class="help-header">
+                <div class="hh-icon">&#x1F4D6;</div>
+                <div class="hh-title">护考高频考点精讲</div>
+                <div class="hh-sub">邀请你助力领取这份资料</div>
+              </div>
+              <div class="help-body">
+                <div class="inviter"><strong>李晓华</strong> 邀请你帮她助力</div>
+                <div style="margin-top:12px;font-size:13px;color:#8C8C8C">
+                  邀请2位新用户即可领取<br>
+                  你还差 1 位就成功了
+                </div>
+              </div>
+              <div class="help-btn">立即助力</div>
+            </div>
+
+            <!-- 助力成功 -->
+            <div id="phone-help-success" class="phone-page">
+              <div class="success-page">
+                <div class="s-icon">&#x2705;</div>
+                <div class="s-title">助力成功！</div>
+                <div class="s-desc">已为 <strong>李晓华</strong> 成功助力<br>好友离领取资料更近一步</div>
+                <button class="s-btn" onclick="switchPage('activity-home')">去看看其他资料</button>
+              </div>
+            </div>
+
+            <!-- 老用户提示 -->
+            <div id="phone-help-existed" class="phone-page">
+              <div class="existed-page">
+                <div class="e-icon">&#x26A0;&#xFE0F;</div>
+                <div class="e-title">您无法为此助力</div>
+                <div class="e-desc">
+                  您已是平台用户，无法为好友助力<br><br>
+                  但您也可以发起邀请领取该资料
+                </div>
+                <button class="e-btn" onclick="switchPage('activity-home')">确定，去发起邀请</button>
+              </div>
+            </div>
+
+            <!-- 已领取提示 -->
+            <div id="phone-activity-claimed" class="phone-page">
+              <div class="claimed-page">
+                <div class="cl-icon">&#x1F4E6;</div>
+                <div class="cl-title">已领取</div>
+                <div class="cl-desc">该资料已发放，请前往APP查看</div>
+                <button class="cl-btn" onclick="switchPage('activity-home')">去看看其他资料</button>
+              </div>
+            </div>
+
+          </div><!-- /phone-frame -->
+        </div><!-- /prototype-area -->
+      </div><!-- /left-panel -->
+
+      <!-- 右侧：说明文档 -->
+      <div class="right-panel" id="doc-panel">
+        <!-- 由 JS 动态填充 -->
+      </div>
+    </div><!-- /prototype-layout -->
+
+  </div><!-- /main-content -->
+</div>
+
+<script>
+// ===== 页面说明文档数据 =====
+const docs = {
+  'overview': {
+    title: '需求总体说明',
+    items: [
+      { h: '活动概述', t: '护士网拉新领资料/小课活动。用户进入活动主页浏览资料，点击感兴趣的资料发起"邀请2位新用户助力"任务，分享给微信好友后，好友助力成功即可领取资料。' },
+      { h: '核心业务流程', t: '' },
+      { h: 'Step 1 — 浏览', t: '用户进入活动主页，顶部推荐轮播展示热门资料/小课，下方全部列表展示所有可领取内容。资料卡片显示标题、类型和领取状态。' },
+      { h: 'Step 2 — 发起助力', t: '用户点击资料卡片进入裂变发起页，查看资料详情和邀请进度。点击"立即分享"按钮，已登录用户可分享小程序卡片，未登录用户先拉起登录。' },
+      { h: 'Step 3 — 受邀助力', t: '好友通过小程序卡片进入受邀助力页，点击"立即助力"拉起登录。新用户登录后自动助力成功；老用户提示"无法助力，但可自己发起"' },
+      { h: 'Step 4 — 完成领取', t: '当助力人数达到2人，系统自动为该用户发放资料。用户再次进入该资料时提示"已领取，请前往APP查看"。用户可继续发起其他资料的助力任务。' },
+      { h: '用户角色说明', t: '' },
+      { h: '发起人', t: '浏览资料 → 发起助力 → 分享给好友 → 满2人领取资料。每个资料独立计算进度，可同时发起多个助力。' },
+      { h: '受邀好友（新用户）', t: '点击小程序卡片 → 登录/注册 → 助力成功 → 可继续浏览活动页，自己也可发起助力。' },
+      { h: '受邀好友（老用户）', t: '点击小程序卡片 → 登录 → 提示无助力资格 → 引导成为发起人。' },
+    ]
+  },
+  'activity-home': {
+    title: '活动主页',
+    items: [
+      { h: '页面目标', t: '展示所有可免费领取的资料与小课，引导用户发起助力邀请' },
+      { h: '模块说明', t: '' },
+      { h: '推荐轮播区', t: '展示3个推荐内容（小课/资料），通过左右箭头切换，底部圆点指示当前位置。每个推荐项显示类型标签、标题和简短描述。' },
+      { h: '全部资料列表', t: '网格布局展示所有资料与小课。每个卡片显示图标、标题、类型和领取人数。卡片可带有状态角标（进行中/已完成）。' },
+      { h: '状态说明', t: '' },
+      { h: '状态：进行中', t: '该资料用户已发起助力但未完成，显示"已邀请 X/2 人"进度' },
+      { h: '状态：已完成', t: '助力已满，可领取资料，显示绿色"已完成"角标' },
+      { h: '状态：未领取', t: '常规状态，用户可点击发起新的助力' },
+      { h: '主要操作', t: '点击资料卡片 → 进入裂变发起页' },
+      { h: '跳转关系', t: '资料卡片 → 裂变发起页' },
+    ]
+  },
+  'activity-detail': {
+    title: '裂变发起页',
+    items: [
+      { h: '页面目标', t: '展示资料详情，用户发起邀请助力任务并分享给好友' },
+      { h: '模块说明', t: '' },
+      { h: '资料封面区', t: '显示资料图标、标题和"邀请2位好友助力即可免费领取"的激励文案' },
+      { h: '资料描述区', t: '展示资料的详细介绍内容' },
+      { h: '邀请进度区', t: '进度条展示已邀请人数占比，头像圆圈展示已邀请的好友，空白位置用虚线占位。文案提示"邀请2位新用户即可免费领取"' },
+      { h: '操作按钮', t: '' },
+      { h: '状态：进行中', t: '显示"立即分享"按钮（蓝色渐变），点击后可分享小程序卡片给好友' },
+      { h: '状态：已完成', t: '显示"已达成，立即领取"按钮（绿色渐变），点击后领取资料' },
+      { h: '状态：已领取', t: '显示"已领取，请前往APP查看"（灰色不可点击）' },
+      { h: '用户分流', t: '未登录用户点击"立即分享" → 拉起登录页' },
+      { h: '跳转关系', t: '分享 → 好友收到小程序卡片 → 好友打开受邀助力页' },
+    ]
+  },
+  'activity-help': {
+    title: '受邀助力页',
+    items: [
+      { h: '页面目标', t: '受邀好友进入此页面，帮助发起人完成助力' },
+      { h: '模块说明', t: '' },
+      { h: '资料信息区', t: '展示被助力的资料图标、名称和"邀请你助力领取"提示' },
+      { h: '邀请人信息', t: '显示发起人的姓名和邀请关系' },
+      { h: '进度提示区', t: '展示当前助力进度"邀请2位新用户即可领取，你还差X位就成功了"' },
+      { h: '操作说明', t: '' },
+      { h: '未登录用户', t: '点击"立即助力"按钮 → 拉起登录/注册' },
+      { h: '新用户（登录后）', t: '登录后自动完成助力 → 跳转到助力成功页面' },
+      { h: '老用户（登录后）', t: '提示"您已是平台用户，无法助力" → 引导成为发起人' },
+      { h: '跳转关系', t: '助力成功 → 助力成功页 | 老用户 → 老用户提示页' },
+    ]
+  },
+  'help-success': {
+    title: '助力成功页',
+    items: [
+      { h: '页面目标', t: '新用户助力成功后展示反馈页面' },
+      { h: '页面说明', t: '显示成功图标和"助力成功！"文案，告知用户已为XX成功助力' },
+      { h: '额外提示', t: '如果本次助力后已达到2人目标，额外显示"助力已满，资料已自动发放给好友"' },
+      { h: '主要操作', t: '"去看看其他资料" 按钮 → 返回活动主页，用户可浏览并自己发起助力' },
+      { h: '跳转关系', t: '去看看其他资料 → 活动主页' },
+    ]
+  },
+  'help-existed': {
+    title: '老用户提示页',
+    items: [
+      { h: '页面目标', t: '老用户（已注册用户）点击助力后，提示无助力资格并引导成为发起人' },
+      { h: '场景说明', t: '该用户已是平台用户，无法为好友助力（仅新用户可助力）' },
+      { h: '引导文案', t: '"但您也可以发起邀请领取该资料" — 鼓励老用户自己发起助力任务' },
+      { h: '主要操作', t: '"确定，去发起邀请" 按钮 → 跳转活动主页，用户可发起自己的助力任务' },
+      { h: '跳转关系', t: '确定 → 活动主页' },
+    ]
+  },
+  'activity-claimed': {
+    title: '已领取提示页',
+    items: [
+      { h: '页面目标', t: '发起人再次进入已领取资料的提示页面' },
+      { h: '场景说明', t: '该资料的助力任务已完成且用户已领取，系统已自动发放资料' },
+      { h: '文案说明', t: '显示"已领取"状态和"该资料已发放，请前往APP查看"' },
+      { h: '主要操作', t: '"去看看其他资料" 按钮 → 返回活动主页，用户可发起其他资料的助力任务' },
+      { h: '产品逻辑', t: '用户可同时发起多个资料的助力任务，互不冲突' },
+      { h: '跳转关系', t: '去看看其他资料 → 活动主页' },
+    ]
+  }
+};
+
+// ===== 页面切换函数 =====
+function switchPage(pageId) {
+  // 更新 Tab 高亮
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+  const tab = document.querySelector('.page-tab[data-page="' + pageId + '"]');
+  if (tab) tab.classList.add('active');
+
+  if (pageId === 'overview') {
+    // 显示全宽需求说明页，隐藏原型左右分栏
+    document.getElementById('page-overview').classList.add('active');
+    document.getElementById('prototype-layout').classList.remove('active');
+  } else {
+    // 隐藏需求说明页，显示原型左右分栏
+    document.getElementById('page-overview').classList.remove('active');
+    document.getElementById('prototype-layout').classList.add('active');
+
+    // 切换手机内的页面
+    document.querySelectorAll('.phone-page').forEach(p => p.classList.remove('active'));
+    const phonePage = document.getElementById('phone-' + pageId);
+    if (phonePage) phonePage.classList.add('active');
+
+    // 更新右侧说明文档
+    const doc = docs[pageId];
+    if (doc) {
+      let html = '<h2>' + doc.title + '</h2>';
+      doc.items.forEach(item => {
+        if (item.t) {
+          html += '<h4>' + item.h + '</h4>';
+          html += '<p>' + item.t + '</p>';
+        } else {
+          html += '<h3>' + item.h + '</h3>';
+        }
+      });
+      document.getElementById('doc-panel').innerHTML = html;
+    }
+  }
+
+  // 滚动到顶部
+  document.querySelector('.main-content').scrollTop = 0;
+}
+
+// ===== 轮播切换 =====
+let carouselIndex = 0;
+function carouselPrev(e) { e.stopPropagation(); moveCarousel(-1); }
+function carouselNext(e) { e.stopPropagation(); moveCarousel(1); }
+function moveCarousel(dir) {
+  const items = document.querySelectorAll('#carousel-track .carousel-item');
+  const dots = document.querySelectorAll('#carousel-dots span');
+  carouselIndex = (carouselIndex + dir + items.length) % items.length;
+  items.forEach((el, i) => el.classList.toggle('active', i === carouselIndex));
+  dots.forEach((el, i) => el.classList.toggle('active', i === carouselIndex));
+}
+
+// ===== 初始化 =====
+switchPage('overview');
+</script>
+
+</body>
+</html>
